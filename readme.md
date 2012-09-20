@@ -4,7 +4,10 @@ Simple STOMP client library in Java.
 
 ## Example
 
- `String host = "localhost";
+ `
+ 
+ 
+String host = "localhost";
 int port = 61613;
 String queue = "/queue/test_stomp";
 
@@ -43,4 +46,7 @@ try {
 } finally {
         System.out.println("disconnecting ...");
         client.disconnect();
-}`
+}
+
+
+`

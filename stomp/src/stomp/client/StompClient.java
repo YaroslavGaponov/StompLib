@@ -187,24 +187,22 @@ public class StompClient {
 	}	
 
 	
-	private void onconnected(String sessionId) {
+	private synchronized void onconnected(String sessionId) {
 		this.sessionId = sessionId;		
 	}
 
-	private void ondisconnected() {		
-	}
-	
-	
-	public void onmessage(String  message_id, String body) {
-	}
-
-	public void onreceipt(String receipt_id) {
+	private synchronized void ondisconnected() {		
 	}
 		
-	public void onerror(String message, String description) {
+	public synchronized void onmessage(String  message_id, String body) {
 	}
-	
-	
+
+	public synchronized void onreceipt(String receipt_id) {
+	}
+		
+	public synchronized void onerror(String message, String description) {
+	}
+		
 	
 	private void sendframe(StompFrame frame) throws StompException {
 		try {

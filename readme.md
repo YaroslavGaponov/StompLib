@@ -4,23 +4,20 @@ Simple STOMP client library in Java.
 
 ## Example
 
-		String host = "localhost";
-		int port = 61613;
-		String queue = "/queue/test_stomp";
+
 
 		StompClient client = new StompClient(host, port) {
-			public void onmessage(String  message_id, String body) {
-				System.out.println("onmessage : " + message_id + " : " + body);
-				// sending ack command ...
-				try {
-					ack(message_id);
-				} catch (StompException e) {}
+			public synchronized void onmessage(String  message_id, String body) {
+				System.out.println("onmessage : " + message_id + " : " + body);				
+				if (ack == Ack.client) {
+					try { ack(message_id); } catch (StompException e) {}
+				}
 			}
-			public void onreceipt(String receipt_id) {
+			public synchronized void onreceipt(String receipt_id) {
 				System.out.println("onreceipt : " + receipt_id);
 			}
 				
-			public void onerror(String message, String description) {
+			public synchronized void onerror(String message, String description) {
 				System.out.println("onerror : " + message + " (" + description + ")");
 			}			
 		};
@@ -31,7 +28,7 @@ Simple STOMP client library in Java.
 			client.connect();
 
 			System.out.println(String.format("subscribing on %s ...", queue));
-			client.subscribe(queue, Ack.client);
+			client.subscribe(queue, ack);
 
 			System.out.println(String.format("sending messages to %s ...", queue));
 			for (int i = 0; i < 10; i++) {
@@ -39,7 +36,7 @@ Simple STOMP client library in Java.
 			}
 													
 			try {
-				Thread.currentThread().sleep(500000);			
+				Thread.sleep(500000);			
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -54,5 +51,4 @@ Simple STOMP client library in Java.
 			System.out.println("disconnecting ...");
 			client.disconnect();
 		}
-
 

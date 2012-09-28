@@ -6,16 +6,6 @@ Simple STOMP client library in Java.
 
 <p><code>
 
-
-
-package stomp.client.test.async;
-
-import java.util.Scanner;
-
-import stomp.client.Ack;
-import stomp.client.StompClient;
-import stomp.client.StompException;
-
 public class test {
 
 	public static void main(String[] args) throws StompException {

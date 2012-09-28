@@ -4,7 +4,10 @@ Simple STOMP client library in Java.
 
 ## Example
 
-<p><code>`
+<p><code>
+
+
+
 package stomp.client.test.async;
 
 import java.util.Scanner;
@@ -73,4 +76,6 @@ public class test {
 	}
 
 }
-`</code></p>
+
+
+</code></p>

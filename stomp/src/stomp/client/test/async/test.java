@@ -1,10 +1,3 @@
-Simple STOMP client library in Java.
-========
-
-
-## Example
-
-
 package stomp.client.test.async;
 
 import java.util.Scanner;

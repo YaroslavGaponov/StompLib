@@ -11,10 +11,10 @@ Simple STOMP client library in Java.
 		StompClient client = new StompClient(host, port) {
 			public void onmessage(String  message_id, String body) {
 				System.out.println("onmessage : " + message_id + " : " + body);
-				/*
+				// sending ack command ...
 				try {
 					ack(message_id);
-				} catch (StompException e) {}*/
+				} catch (StompException e) {}
 			}
 			public void onreceipt(String receipt_id) {
 				System.out.println("onreceipt : " + receipt_id);
@@ -34,7 +34,7 @@ Simple STOMP client library in Java.
 			client.subscribe(queue, Ack.client);
 
 			System.out.println(String.format("sending messages to %s ...", queue));
-			for (int i = 0; i < 100; i++) {
+			for (int i = 0; i < 10; i++) {
 				client.send(queue, "hello #" + i);
 			}
 													

@@ -1,71 +1,1 @@
-Simple STOMP client library in Java.
-========
-
-
-## Example
-
-<p><code>
-
-public class test {
-
-	public static void main(String[] args) throws StompException {
-		new test().run("localhost", 61613);
-	}
-	
-	public void run(String host, int port) throws StompException {
-		
-		
-		StompClient client = new StompClient(host, port) {
-			public void onConnected(String sessionId) {
-				System.out.println("connected: sessionId = " + sessionId);
-			}
-			
-			public void onDisconnected() {
-				System.out.println("disconnected");
-			}
-			
-			public void onMessage(String messageId, String body) {
-				System.out.println("message: messageId = " + messageId + " body = " + body);
-				try {
-					ack(messageId);
-				} catch (StompException e) {
-				}
-			}
-			
-			public void onReceipt(String receiptId) {
-				System.out.println("receipt: receiptId = " + receiptId);
-			}
-			
-			public void onError(String message, String description) {
-				System.out.println("error: message = " + message + " description = " + description);
-			}
-		};
-		
-		// connect to STOMP server, send CONNECT command and wait CONNECTED answer
-		client.connect();
-		
-		// subscribe on queue
-		client.subscribe("/queue/test", Ack.client);
-		
-		
-		// send 10 messages
-		for(int i=0; i<10; i++) {
-			client.send("/queue/test", "message #" + i);
-		}
-		
-		// wait		
-		Scanner sc = new Scanner(System.in);
-		sc.nextLine();
-		
-		// unsubscribe
-		client.unsubscribe("/queue/test");
-		
-		// disconnect
-		client.disconnect();
-		
-	}
-
-}
-
-
-</code></p>
+Simple STOMP client library in Java.========## Example<p><code><br/>public class test {<br/>	public static void main(String[] args) throws StompException {<br/>		new test().run("localhost", 61613);<br/>	}<br/>		public void run(String host, int port) throws StompException {<br/>						StompClient client = new StompClient(host, port) {<br/>			public void onConnected(String sessionId) {<br/>				System.out.println("connected: sessionId = " + sessionId);<br/>			}<br/>						public void onDisconnected() {<br/>				System.out.println("disconnected");<br/>			}<br/>						public void onMessage(String messageId, String body) {<br/>				System.out.println("message: messageId = " + messageId + " body = " + body);<br/>				try {<br/>					ack(messageId);<br/>				} catch (StompException e) {<br/>				}<br/>			}<br/>						public void onReceipt(String receiptId) {<br/>				System.out.println("receipt: receiptId = " + receiptId);<br/>			}<br/>						public void onError(String message, String description) {<br/>				System.out.println("error: message = " + message + " description = " + description);<br/>			}<br/>		};<br/>				// connect to STOMP server, send CONNECT command and wait CONNECTED answer<br/>		client.connect();<br/>				// subscribe on queue<br/>		client.subscribe("/queue/test", Ack.client);<br/>						// send 10 messages<br/>		for(int i=0; i<10; i++) {<br/>			client.send("/queue/test", "message #" + i);<br/>		}				// wait<br/>		Scanner sc = new Scanner(System.in);<br/>		sc.nextLine();<br/>				// unsubscribe<br/>		client.unsubscribe("/queue/test");<br/>				// disconnect<br/>		client.disconnect();<br/>			}<br/>}<br/></code></p>

@@ -1,22 +1,35 @@
-import java.util.ArrayList;
-import java.util.List;
-
 import stomp.client.Ack;
-import stomp.client.ClientMode;
 import stomp.client.StompClient;
 import stomp.client.StompException;
 
 public class test {
 	public static void main(String[] args) {
 
-		String host = "localhost";
+		String host = "acs-dev1";
 		int port = 61613;
 		String queue = "/queue/test_stomp";
 
-		StompClient client = new StompClient(ClientMode.SIMPLE, host, port);
+		StompClient client = new StompClient(host, port) {
+			public void onmessage(String  message_id, String body) {
+				System.out.println("onmessage : " + message_id + " : " + body);
+				/*
+				try {
+					ack(message_id);
+				} catch (StompException e) {}*/
+			}
+			public void onreceipt(String receipt_id) {
+				System.out.println("onreceipt : " + receipt_id);
+			}
+				
+			public void onerror(String message, String description) {
+				System.out.println("onerror : " + message + " (" + description + ")");
+			}			
+		};
+		
+		
 		try {
 			System.out.println(String.format("connecting to STOMP server %s:%s ...", host, port));
-			System.out.println("sessionId is " + client.connect());
+			client.connect();
 
 			System.out.println(String.format("subscribing on %s ...", queue));
 			client.subscribe(queue, Ack.client);
@@ -25,21 +38,14 @@ public class test {
 			for (int i = 0; i < 100; i++) {
 				client.send(queue, "hello #" + i);
 			}
-			
-			List<String> processed = new ArrayList<String>();
-			System.out.println(String.format("receive messages from %s ...", queue));
-			for (int i = 0; i < 100; i++) {
-				String messageId = client.receive();
-				System.out.println(messageId + " : " + client.getMessage(messageId));
-				processed.add(messageId);
+													
+			try {
+				Thread.currentThread().sleep(500000);			
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 			
-			System.out.println("sent ack command to server ...");
-			for(String id : processed) {
-				System.out.println("Ack for " + id);
-				client.ack(id);
-			}
-
+			
 			System.out.println("unsubscribing ...");
 			client.unsubscribe(queue);
 			

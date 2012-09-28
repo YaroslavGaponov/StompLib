@@ -67,7 +67,6 @@ class StompFrame {
 		frame.body = raw.substring(commandheaderSections.length() + 2);
 
 		return frame;
-
 	}
 
 }

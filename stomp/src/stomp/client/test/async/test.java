@@ -14,8 +14,7 @@ public class test {
 	
 	public void run(String host, int port) throws StompException {
 		
-		
-		StompClient client = new StompClient(host, port) {
+		StompClient client = new StompClient(host, port, null) {
 			public void onConnected(String sessionId) {
 				System.out.println("connected: sessionId = " + sessionId);
 			}

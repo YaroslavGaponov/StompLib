@@ -9,13 +9,13 @@ import java.util.Map;
 
 
 public class StompClient {
-	private String address;
-	private int port;	
-	private Socket socket;
+	private final String address;
+	private final int port;	
+	private final Credentials credentials;
 	
+	private Socket socket;
 	private String sessionId;	
 	private Thread readerThread;
-	
 	private volatile boolean running = true;
 
 	/**
@@ -23,9 +23,10 @@ public class StompClient {
 	 * @param address
 	 * @param port
 	 */
-	public StompClient(String address, int port) {
+	public StompClient(String address, int port, Credentials credentials) {
 		this.address = address;
 		this.port = port;
+		this.credentials = credentials;
 	}
 
 	// customs handlers
@@ -56,7 +57,12 @@ public class StompClient {
 			readerThread.start();
 
 			// sending CONNECT command
-			send(new StompFrame(StompCommand.CONNECT));
+			StompFrame connectFrame  = new StompFrame(StompCommand.CONNECT);
+			if (credentials != null) {
+				connectFrame.header.put("login", credentials.getLogin());
+				connectFrame.header.put("passcode", credentials.getPasscode());
+			}
+			send(connectFrame);
 			
 			// wait CONNECTED server command
 			synchronized(this) {

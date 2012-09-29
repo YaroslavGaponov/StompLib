@@ -285,7 +285,7 @@ public class StompClient {
 	 * @param frame
 	 * @throws StompException
 	 */
-	private void send(StompFrame frame) throws StompException {
+	private synchronized void send(StompFrame frame) throws StompException {
 		try {
 			socket.getOutputStream().write(frame.getBytes());
 		} catch (IOException e) {

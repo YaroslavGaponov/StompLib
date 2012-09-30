@@ -3,38 +3,56 @@ package stomp.client;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
 import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 
+import javax.net.SocketFactory;
+import javax.net.ssl.SSLSocketFactory;
 
-public class StompClient {
-	private final String address;
-	private final int port;	
-	private final Credentials credentials;
+
+public abstract class StompClient {
+	private final URI uri;
 	
 	private Socket socket;
-	private String sessionId;	
+	private String sessionId;
+	
 	private Thread readerThread;
 	private volatile boolean running = true;
+	
+	/**
+	 * constructor
+	 * @throws URISyntaxException
+	 */
+	public StompClient() throws URISyntaxException {
+		this("tcp://localhost:61613");
+	}
+		
+	/**
+	 * constructor
+	 * @param url
+	 * @throws URISyntaxException
+	 */
+	public StompClient(String url) throws URISyntaxException {
+		this(new URI(url));
+	}
 
 	/**
 	 * constructor
 	 * @param address
 	 * @param port
 	 */
-	public StompClient(String address, int port, Credentials credentials) {
-		this.address = address;
-		this.port = port;
-		this.credentials = credentials;
+	public StompClient(URI uri) {
+		this.uri = uri;
 	}
 
 	// customs handlers
-	public void onConnected(String sessionId) {}
-	public void onDisconnected() {}
-	public void onMessage(String  messageId, String body){}
-	public void onReceipt(String receiptId) {}
-	public void onError(String message, String description) {}	
+	public abstract void onConnected(String sessionId);
+	public abstract void onDisconnected();
+	public abstract void onMessage(String  messageId, String body);
+	public abstract void onReceipt(String receiptId);
+	public abstract void onError(String message, String description);	
 
 	/**
 	 * connect() - initialize work with STOMP server
@@ -43,8 +61,14 @@ public class StompClient {
 	public void connect() throws StompException {
 		try {
 			// connecting to STOMP server
-			InetAddress ipAddress = InetAddress.getByName(address);
-			socket = new Socket(ipAddress, this.port);
+			if (uri.getScheme().equals("tcp")) {
+				socket = new Socket(this.uri.getHost(), this.uri.getPort());
+			} else if (uri.getScheme().equals("tcps")) {
+				SocketFactory socketFactory = SSLSocketFactory.getDefault();
+			    socket = socketFactory.createSocket(this.uri.getHost(), this.uri.getPort());				
+			} else {
+				throw new StompException("Library is not support this scheme");
+			}
 
 			// initialize reader thread
 			readerThread = new Thread( new Runnable() {
@@ -58,9 +82,12 @@ public class StompClient {
 
 			// sending CONNECT command
 			StompFrame connectFrame  = new StompFrame(StompCommand.CONNECT);
-			if (credentials != null) {
-				connectFrame.header.put("login", credentials.getLogin());
-				connectFrame.header.put("passcode", credentials.getPasscode());
+			if (uri.getUserInfo() != null) {
+				String[] credentials = uri.getUserInfo().split(":");
+				if (credentials.length == 2) {
+					connectFrame.header.put("login", credentials[0]);
+					connectFrame.header.put("passcode", credentials[1]);
+				}
 			}
 			send(connectFrame);
 			

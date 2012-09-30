@@ -2,8 +2,6 @@ package stomp.client.test.async;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Scanner;
-
 import stomp.client.Ack;
 import stomp.client.StompClient;
 import stomp.client.StompException;

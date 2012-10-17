@@ -38,6 +38,10 @@ public class test {
 			public void onError(String message, String description) {
 				System.out.println("error: message = " + message + " description = " + description);
 			}
+
+			public void onCriticalError(Exception e) {
+				e.printStackTrace();
+			}
 		};
 		
 		// connect to STOMP server, send CONNECT command and wait CONNECTED answer
@@ -51,8 +55,8 @@ public class test {
 		}
 		
 		
-		// send 10 messages
-		for(int i=0; i<5; i++) {
+		// send 100 messages
+		for(int i=0; i<100; i++) {
 			client.send("/queue/test", "message #" + i);
 		}
 		

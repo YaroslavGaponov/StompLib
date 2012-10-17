@@ -52,7 +52,8 @@ public abstract class StompClient {
 	public abstract void onDisconnected();
 	public abstract void onMessage(String  messageId, String body);
 	public abstract void onReceipt(String receiptId);
-	public abstract void onError(String message, String description);	
+	public abstract void onError(String message, String description);
+	public abstract void onCriticalError(Exception e);
 
 	/**
 	 * connect() - initialize work with STOMP server
@@ -117,7 +118,6 @@ public abstract class StompClient {
 
 				// stopping reader thread
 				running = false;
-				readerThread.interrupt();
 				
 				// close socket
 				socket.close();
@@ -177,9 +177,13 @@ public abstract class StompClient {
 					}
 					
 				} catch (IOException e) {
+					onCriticalError(e);
+					return;
 				} 
 			}
 		} catch (IOException e) {
+			onCriticalError(e);
+			return;
 		}						
 	}
 

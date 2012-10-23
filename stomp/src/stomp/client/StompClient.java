@@ -139,7 +139,13 @@ public abstract class StompClient {
 					int ch;				
 					
 					// skip lead trash
-					do { ch = in.read(); } while (ch < 'A' || ch > 'Z');
+					do { 
+						ch = in.read(); 
+	                    if (ch < 0){
+	                        onCriticalError(new IOException("stome server disconnected!"));
+	                        return;
+	                    }
+					} while (ch < 'A' || ch > 'Z');
 					
 					// read frame 
 					do { sb.append((char)ch); } while ((ch = in.read()) != 0);
